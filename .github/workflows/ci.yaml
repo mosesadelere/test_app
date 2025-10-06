@@ -10,6 +10,8 @@ on:
 jobs:
   build_and_push:
     runs-on:  ubuntu-latest
+    outputs:
+      tag: ${{ steps.set_sha.outputs.image_tag }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
