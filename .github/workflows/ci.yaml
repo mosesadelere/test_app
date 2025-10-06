@@ -49,7 +49,6 @@ jobs:
 
       - name: Install dependencies
         run: | 
-          pip install -e .
           pip install pytest
           
       - name: Pull the built image and test container
