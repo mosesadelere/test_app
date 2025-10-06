@@ -15,12 +15,13 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set Short SHA
+        id: set_sha
         run:  |
-          echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+          echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Build Docker image
         run:  |
-          docker build -t mosesade/devops:${{ env.SHORT_SHA }} .
+          docker build -t mosesade/devops:${{ steps.set_sha.outputs.SHORT_SHA }} .
 
       - name: Login to Dockerhub
         run:  |
@@ -29,7 +30,7 @@ jobs:
       
       - name: Push to Dockerhub
         run:  |
-          docker push mosesade/devops:${{ env.SHORT_SHA }}
+          docker push mosesade/devops:${{ steps.set_sha.outputs.SHORT_SHA }}
 
   test:
     needs: build_and_push
@@ -42,9 +43,9 @@ jobs:
       - name: Pull the built image
         run: |
           echo "Pulling built image"
-          docker pull mosesade/devops:${{ env.SHORT_SHA }}
+          docker pull mosesade/devops:${{ needs.build_and_push.outputs.SHORT_SHA }}
 
       - name: Test container
         run: |
           echo "Running test.."
-          docker run --rm mosesade/devops:${{ env.SHORT_SHA }}  python -m pytest tests/ -v
+          docker run --rm mosesade/devops:${{ needs.build_and_push.outputs.SHORT_SHA }}  python -m pytest tests/ -v
