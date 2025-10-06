@@ -42,7 +42,7 @@ jobs:
         run:  |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
           
-      - name: Pull the built image
+      - name: Pull the built image and test container
         env:
           TAG: ${{ needs.build_and_push.outputs.tag }}
         run: |
@@ -52,8 +52,4 @@ jobs:
             exit 1
           fi
           docker pull mosesade/devops:$TAG
-
-      - name: Test container
-        run: |
-          echo "Running test....."
           docker run --rm mosesade/devops:$TAG python -m pytest tests/ -v
