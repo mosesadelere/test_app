@@ -1,0 +1,55 @@
+---
+
+name: DevOps Project Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_push:
+    runs-on:  ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Set Short SHA
+        run:  |
+          echo "SHORT_SHA=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run:  |
+          docker build -t mosesade/complete-devops:${{ env.SHORT_SHA }} .
+
+      - name: Login to Dockerhub
+        run:  |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Security scan for Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: mosesade/complete-devops:${{ env.SHORT_SHA }}
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Push to Dockerhub
+        run:  |
+          docker push mosesade/complete-devops:${{ env.SHORT_SHA }}
+
+  test:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull the built image
+        run: |
+          echo "Pulling built image"
+          docker pull mosesade/complete-devops:${{ env.SHORT_SHA }}
+
+      - name: Test container
+        run: |
+          echo "Running test..."
+          docker run --rm mosesade/complete-devops:${{ env.SHORT_SHA }}  python -m pytest tests/ -v
