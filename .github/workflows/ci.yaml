@@ -44,7 +44,7 @@ jobs:
           
       - name: Pull the built image
         env:
-          TAG: ${{ needs.build_and_push.outputs.SHORT_SHA }}
+          TAG: ${{ needs.build_and_push.outputs.tag }}
         run: |
           echo "Pulling built image: mosesade/devops:$TAG"
           if [ -z "$TAG" ]; then
