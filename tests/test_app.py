@@ -9,4 +9,4 @@ def client():
 def test_hello_endpoint(client):
     response = client.get('/')
     assert response.status_code == 200
-    assert b"Hello from Simple Flask App!" in response.data
+    assert b"The current time:" in response.data
