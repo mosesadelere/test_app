@@ -20,7 +20,7 @@ jobs:
 
       - name: Build Docker image
         run:  |
-          docker build -t mosesade/complete-devops:${{ env.SHORT_SHA }} .
+          docker build -t mosesade/devops:${{ env.SHORT_SHA }} .
 
       - name: Login to Dockerhub
         run:  |
@@ -43,4 +43,4 @@ jobs:
       - name: Test container
         run: |
           echo "Running test..."
-          docker run --rm mosesade/rdevops:${{ env.SHORT_SHA }}  python -m pytest tests/ -v
+          docker run --rm mosesade/devops:${{ env.SHORT_SHA }}  python -m pytest tests/ -v
