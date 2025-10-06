@@ -43,7 +43,9 @@ jobs:
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Install dependencies
-        run: pip install pytest
+        run: | 
+          pip install pytest
+          pytest tests/ -v
           
       - name: Pull the built image and test container
         env:
