@@ -29,7 +29,7 @@ jobs:
       - name: Security scan for Image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: mosesade/complete-devops:${{ env.SHORT_SHA }}
+          image-ref: mosesade/devops:${{ env.SHORT_SHA }}
           format: 'table'
           exit-code: '0'
           ignore-unfixed: true
@@ -38,7 +38,7 @@ jobs:
 
       - name: Push to Dockerhub
         run:  |
-          docker push mosesade/complete-devops:${{ env.SHORT_SHA }}
+          docker push mosesade/devops:${{ env.SHORT_SHA }}
 
   test:
     needs: build_and_push
@@ -47,9 +47,9 @@ jobs:
       - name: Pull the built image
         run: |
           echo "Pulling built image"
-          docker pull mosesade/complete-devops:${{ env.SHORT_SHA }}
+          docker pull mosesade/devops:${{ env.SHORT_SHA }}
 
       - name: Test container
         run: |
           echo "Running test..."
-          docker run --rm mosesade/complete-devops:${{ env.SHORT_SHA }}  python -m pytest tests/ -v
+          docker run --rm mosesade/devops:${{ env.SHORT_SHA }}  python -m pytest tests/ -v
