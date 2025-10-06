@@ -11,7 +11,7 @@ jobs:
   build_and_push:
     runs-on:  ubuntu-latest
     outputs:
-      tag: ${{ steps.set_sha.outputs.image_tag }}
+      tag: ${{ steps.set_sha.outputs.SHORT_SHA }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
