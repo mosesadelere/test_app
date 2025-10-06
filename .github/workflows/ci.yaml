@@ -41,11 +41,17 @@ jobs:
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
           
       - name: Pull the built image
+        env:
+          TAG: ${{ needs.build_and_push.outputs.SHORT_SHA }}
         run: |
-          echo "Pulling built image: mosesade/devops:${{ needs.build_and_push.outputs.SHORT_SHA }}"
-          docker pull mosesade/devops:${{ needs.build_and_push.outputs.SHORT_SHA }}
+          echo "Pulling built image: mosesade/devops:${{ TAG }}"
+          if [ -z "$TAG" ]; then
+            echo "Error: TAG is empty!"
+            exit 1
+          fi
+          docker pull mosesade/devops:${{ TAG }}
 
       - name: Test container
         run: |
           echo "Running test....."
-          docker run --rm mosesade/devops:${{ needs.build_and_push.outputs.SHORT_SHA }}  python -m pytest tests/ -v
+          docker run --rm mosesade/devops:${{ TAG }}  python -m pytest tests/ -v
